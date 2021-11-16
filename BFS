@@ -1,0 +1,96 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Scanner;
+
+class Main {
+    public static boolean[] isVisited;
+    public static int[][] edges;
+    public static ArrayList<Integer> vertexList;
+
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        while ((n--)>0){
+            int t = sc.nextInt();
+            int[] vertexValue = new int[t];
+            for(int i = 0;i < t;i++){
+                vertexValue[i] = i;
+            }
+            Main graph = new Main(t);
+            for(int vertexvalue:vertexValue){
+                graph.insertVertex(vertexvalue);
+            }
+
+            for(int i = 0;i < t;i++){
+                for(int j = 0;j < t;j++){
+                    edges[i][j] = sc.nextInt();
+                }
+            }
+
+            graph.bfs();
+            System.out.println();
+        }
+    }
+
+    public int getFirstNeighbor(int index){
+        for(int j = 0;j < vertexList.size();j++){
+            if(edges[index][j] > 0){
+                return j;
+            }
+        }
+
+        return -1;
+    }
+
+    public int getNextNeighbor(int v1,int v2){
+        for(int j = v2 + 1;j < vertexList.size();j++){
+            if(edges[v1][j] > 0){
+                return j;
+            }
+        }
+        return -1;
+    }
+
+    public void bfs(boolean[] isVisited,int i){
+        int u;
+        int w;
+        LinkedList queue  = new LinkedList();
+        System.out.print(vertexList.get(i)+" ");
+        isVisited[i] = true;
+        queue.addLast(i);
+
+        while (! queue.isEmpty()){
+            u = (Integer)queue.removeFirst();
+            w = getFirstNeighbor(u);
+            while (w != -1){
+                if(!isVisited[w]){
+                    System.out.print(vertexList.get(w)+" ");
+                    isVisited[w] = true;
+                    queue.addLast(w);
+                }
+
+                w = getNextNeighbor(u,w);
+            }
+        }
+    }
+
+    public void bfs(){
+        for(int i = 0;i < vertexList.size();i++){
+            if(!isVisited[i]){
+                bfs(isVisited,i);
+            }
+        }
+    }
+
+    public Main(int n){
+        isVisited = new boolean[n];
+        edges = new int[n][n];
+        vertexList = new ArrayList<>(n);
+    }
+
+    public void insertVertex(int vertex){
+        vertexList.add(vertex);
+    }
+
+}
