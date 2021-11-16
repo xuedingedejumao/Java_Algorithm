@@ -1,5 +1,3 @@
-package Data_Structure;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,7 +10,7 @@ public class DFS {
     public static void main(String[] args) {
         int n = 5;
         String vertexvalue[]  = {"A","B","C","D","E"};
-        Graph graph = new Graph(n);
+        DFS graph = new DFS(n);
 
         for(String vertex:vertexvalue){
             graph.insertVertex(vertex);
@@ -25,7 +23,13 @@ public class DFS {
         graph.insertEdge(1,4,1);
 
         graph.show();
+
+        System.out.println("-------------");
+
+
+        graph.dfs();
     }
+
     //获得第一个临接节点下标
     public int getFirstNeighbor(int index) {
         for(int j = 0; j < vertexList.size();j++){
@@ -46,8 +50,8 @@ public class DFS {
         return -1;
     }
 
-    public void dfs(boolean[] isVisited,int i){
-        System.out.println(getvalueByIndex(i) + "->");
+    private void dfs(boolean[] isVisited,int i){
+        System.out.print(getvalueByIndex(i) + "->");
         isVisited[i] = true;
 
         int w = getFirstNeighbor(i);
@@ -62,11 +66,19 @@ public class DFS {
     }
     //重载
     public void dfs(){
-        for(int i = 0;i < )
+        for(int i = 0;i < getNumofVertex();i++ ){
+            if(!isVisited[i]){
+                dfs(isVisited,i);
+            }
+        }
     }
 
     public int getNumofVertex(){
-        
+        return vertexList.size();
+    }
+
+    public int getNumofEdge() {
+        return numofEdge;
     }
 
     public String getvalueByIndex(int i){
@@ -96,3 +108,4 @@ public class DFS {
         numofEdge++;
     }
 }
+
