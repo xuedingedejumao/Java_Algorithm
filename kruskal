@@ -1,8 +1,5 @@
-package Date_Structure;
-
-import java.util.Arrays;
-
 public class Kruskal {
+
     private int edgeNum;
     private char[] vertex;
     private int[][] matrix;
@@ -22,13 +19,8 @@ public class Kruskal {
 
         kruskal.print();
 
-        System.out.println(Arrays.toString(kruskal.getEdge()));
-        EData[] edges = kruskal.getEdge();
-        System.out.println("befor:");
-        System.out.println(Arrays.toString(edges));
-        System.out.println("after");
-        kruskal.sortEdges(edges);
-        System.out.println(Arrays.toString(edges));
+        System.out.println("-----------------------------");
+        kruskal.kruskal();
     }
 
     public Kruskal(char[] vertex ,int[][] matrix){
@@ -39,7 +31,7 @@ public class Kruskal {
         this.matrix = matrix;
 
         for(int i = 0;i < vlen;i++){
-            for(int j = 0;j < vlen ;j++){
+            for(int j = i+1;j < vlen ;j++){
                 if(this.matrix[i][j] != INF){
                     edgeNum++;
                 }
@@ -61,10 +53,6 @@ public class Kruskal {
     private void sortEdges(EData[] edges){
         for(int i = 0;i < edges.length-1;i++){
             for(int j = 0;j <edges.length -1-i;j++){
-                System.out.println(j);
-                System.out.println(j+1 +" *");
-                System.out.println(edges[j]);
-                System.out.println(edges[j+1]+"$");
                 if(edges[j].weight > edges[j+1].weight){
                     EData temp = edges[j];
                     edges[j] = edges[j+1];
@@ -95,6 +83,51 @@ public class Kruskal {
         }
         return edges;
     }
+    /*
+     *获取下标为i的顶点的终点
+     *用于判断两顶点终点是否相同
+     *ends[]:记录了各个顶点终点
+     * 返回的就是下标为i的顶点对应终点的下标
+     */
+    private int  getEnd(int[] ends,int i ){
+        while(ends[i]!=0){
+            i = ends[i];
+        }
+        return i;
+    }
+
+    public void kruskal(){
+        int index = 0;//表示最后结果数组的索引
+        int[] ends = new int[edgeNum];//保存已有最小生成树中的每个顶点在最小生成树中的终点
+        //创建结果数组，保存最后的最小生成树
+        EData[] res = new EData[edgeNum];
+        //获取图中所有的边的集合，一共12条边
+        EData[] edges = getEdge();
+        //按照边的权值大小排序
+        sortEdges(edges);
+
+        //遍历edges 数组，将边添加到最小生成树中时，判断是否形成回路，如果没有，加入rets，否则不能加入
+        for(int i = 0;i < edgeNum;i++){
+            //获取第i条边的第一个顶点（起点）
+            int p1 = getPosition(edges[i].start);
+            //获取第i条边的第一个顶点（起点）
+            int p2 = getPosition(edges[i].end);
+
+            //获取p1这个顶点在已有最小生成树中终点
+            int m = getEnd(ends,p1);
+            //获取p2这个顶点在已有最小生成树中终点
+            int n = getEnd(ends,p2);
+            //是否构成回路  (m 和 n 是否相等）
+            if(m != n){
+                ends[m] = n;//设置m在“已有最小生成树”终点 <E,F> [0,0```0]
+                res[index++] = edges[i];//有一条边加入到res数组
+            }
+        }
+        //统计并打印最小生成树，输出res
+        for(int i = 0;i < index;i++) {
+            System.out.println(res[i]);
+        }
+    }
 }
 
 class EData {
@@ -111,9 +144,10 @@ class EData {
     @Override
     public String toString() {
         return "EData{" +
-                "start=" + start +
-                ", end=" + end +
-                ", weight=" + weight +
+                "<" + start +
+                "," + end +
+                ">=" + weight +
                 '}';
     }
 }
+
