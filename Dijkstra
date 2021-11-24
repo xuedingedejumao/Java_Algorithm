@@ -1,0 +1,140 @@
+import java.util.Arrays;
+
+public class Dijkstra {
+    public static void main(String[] args) {
+        char[] vertex = {'A','B','C','D','E','F','G'};
+        final int N = 65535;
+        int[][] matrix = {
+                {N,5,7,N,N,N,2},
+                {5,N,N,9,N,N,3},
+                {7,N,N,N,8,N,N},
+                {N,9,N,N,N,4,N},
+                {N,N,8,N,N,5,4},
+                {N,N,N,4,5,N,6},
+                {2,3,N,N,4,6,N},
+        };
+        Graph graph = new Graph(vertex,matrix);
+        graph.showG();
+        graph.dijkstra(6);
+        graph.show();
+    }
+
+}
+
+class VisitedVertex{
+    //记录各顶点是否访问过，0为未访问，动态更新
+    public int[] already_arr;
+    //每个下标对应的值为前一个顶点下标，动态更新
+    public int[] pre_visited;
+    //记录出发顶点到其他所有顶点距离，比如G为出发顶点，就会记录到其他顶点的距离，动态更新，求的最短距离就会放入dis
+    public int[] dis;
+    //length为顶点数，index为出发点对应下标
+    VisitedVertex(int length,int index){
+        this.already_arr = new int[length];
+        this.pre_visited = new int[length];
+        this.dis = new int[length];
+
+        //初始化dis
+        Arrays.fill(dis,65535);
+        this.already_arr[index] = 1;//设置出发顶点被访问过
+        this.dis[index] = 0;//设置出发顶点的访问距离为0
+    }
+    //判断index顶点是否被访问过
+    public boolean in(int index){
+        return already_arr[index] == 1;
+    }
+    //更新出发顶点到index顶点距离
+    public void updateDis(int index,int len){
+        dis[index] = len;
+    }
+    //更新pre顶点的前驱为index节点
+    public void updatePre(int pre,int index){
+        pre_visited[pre] = index;
+    }
+    //返回出发顶点到index的距离
+    public int getDis(int index){
+        return dis[index];
+    }
+
+    //继续选择并返回新的访问顶点，比如这里的G完后，就是A点作为新的访问顶点（不是出发点）
+    public int updateArr(){
+        int min = 65535,index = 0;
+        for(int i = 0;i < already_arr.length;i++){
+            if(already_arr[i] == 0 && dis[i] < min){
+                min  = dis[i];
+                index = i;
+            }
+        }
+        already_arr[index] = 1;
+        return index;
+    }
+
+    public void show(){
+        System.out.println("==================");
+        for(int i: already_arr){
+            System.out.print(i+" ");
+        }
+        System.out.println();
+        for(int i: pre_visited){
+            System.out.print(i+" ");
+        }
+        System.out.println();
+        char[] vertex = {'A','B','C','D','E','F','G'};
+        int count = 0;
+        for(int i:dis){
+            if(i != 65535){
+                System.out.print(vertex[count] + "("+i+")");
+            }else{
+                System.out.println("N");
+            }
+            count++;
+        }
+        System.out.println();
+    }
+
+}
+
+class Graph{
+    private char[] vertex;
+    private int[][] matrix;
+    private VisitedVertex vv;
+
+    public Graph(char[] vertex,int[][] matrix){
+        this.matrix = matrix;
+        this.vertex = vertex;
+    }
+
+    public void showG(){
+        for(int[] link:matrix){
+            System.out.println(Arrays.toString(link));
+        }
+    }
+
+    //index表示出发顶点下标
+    public void dijkstra(int index){
+        vv = new VisitedVertex(vertex.length,index);
+        update(index);
+        for(int j = 1;j < vertex.length;j++){
+            index = vv.updateArr();//选择并返回新的访问节点
+            update(index);
+        }
+    }
+
+    public void show(){
+        vv.show();
+    }
+
+    //更新index下标顶点到周围顶点的距离和周围顶点的前驱节点
+    private void update(int index){
+        int len = 0;
+        for(int j = 0; j < matrix[index].length;j++){
+            //len 含义：出发顶点到index顶点距离 + 从index顶点到j顶点的距离和
+            len = vv.getDis(index) + matrix[index][j];
+            //如果j顶点未被访问过，且len小于出发顶点到j顶点的距离，就要更新
+            if(!vv.in(j) && len < vv.getDis(j)){
+                vv.updatePre(j,index);//更新j前驱为index
+                vv.updateDis(j,len);//更新出发点到j顶点距离
+            }
+        }
+    }
+}
