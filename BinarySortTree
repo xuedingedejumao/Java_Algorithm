@@ -40,6 +40,14 @@ class binarysorttree{
             return root.searchPar(value);
         }
     }
+    public int delRightTreeMin(Node node){
+        Node target = node;
+        while (target.left != null){
+            target = target.left;
+        }
+        delNode(target.value);
+        return target.value;
+    }
 
     public void delNode(int value){
         if(root == null){
@@ -57,6 +65,23 @@ class binarysorttree{
                     parent.left = null;
                 }else if(parent.right != null && parent.right.value == value){
                     parent.right = null;
+                }
+            }else if(target.left != null && target.right != null){
+                int minVal = delRightTreeMin(target.right);
+                target.value = minVal;
+            }else{
+                if(target.left != null){
+                    if(parent.left.value == value){
+                        parent.left = target.left;
+                    }else {
+                        parent.right = target.left;
+                    }
+                }else {
+                    if(parent.left.value == value){
+                        parent.left = target.right;
+                    }else{
+                        parent.right = target.right;
+                    }
                 }
             }
         }
